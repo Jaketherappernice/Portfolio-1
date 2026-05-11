@@ -30,10 +30,9 @@
 #el-4 { left:76.8000%; top:281px; width:197.8256%; height:1120.29px; z-index:10 !important; opacity:1; }
  }
     </style>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics.js"></script>
+    <!-- Updated Firebase SDKs to Compat versions to match your code style -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
 <div id="site-canvas">
@@ -53,14 +52,12 @@ const firebaseConfig = {
   projectId: "dragndrop-eeda4",
   storageBucket: "dragndrop-eeda4.firebasestorage.app",
   messagingSenderId: "124148111401",
-  appId: "1:124148111401:web:95011428420e219497e438",
-  measurementId: "G-L6NJ4Y36QW"
+  appId: "1:124148111401:web:95011428420e219497e438"
 };
 
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const analytics = firebase.analytics(app);
-const db = firebase.database(app);
+// Initialize Firebase using Compat SDK
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 const messagesRef = db.ref("messages");
 
 // Elements
@@ -68,8 +65,8 @@ const messageInput = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
 const messageContainer = document.getElementById("messageContainer");
 
-// Send message
-sendBtn.addEventListener("click", () => {
+// Send message function
+function sendMessage() {
   const text = messageInput.value.trim();
   if (text !== "") {
     messagesRef.push({
@@ -78,23 +75,30 @@ sendBtn.addEventListener("click", () => {
     });
     messageInput.value = "";
   }
-});
+}
 
-// Enter key send
+// Event Listeners
+sendBtn.addEventListener("click", sendMessage);
+
 messageInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    sendBtn.click();
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault(); // Prevent newline in textarea
+    sendMessage();
   }
 });
 
 // Receive & display messages
-messagesRef.orderByChild("timestamp").on("value", (snapshot) => {
+messagesRef.orderByChild("timestamp").limitToLast(50).on("value", (snapshot) => {
   messageContainer.innerHTML = "";
   const messages = snapshot.val();
   if (messages) {
-    Object.values(messages).forEach(msg => {
+    // Convert object to array and sort by timestamp to ensure order
+    const msgArray = Object.keys(messages).map(key => messages[key]);
+    msgArray.sort((a, b) => a.timestamp - b.timestamp);
+
+    msgArray.forEach(msg => {
       const msgEl = document.createElement("div");
-      msgEl.style.cssText = "margin: 6px 0; padding: 8px 12px; background: rgba(255,255,255,0.8); border-radius: 8px; font-size: 20px;";
+      msgEl.style.cssText = "margin: 8px 0; padding: 10px 15px; background: white; border-radius: 12px; font-size: 24px; color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.1); word-wrap: break-word;";
       msgEl.textContent = msg.text;
       messageContainer.appendChild(msgEl);
     });
