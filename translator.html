@@ -12,138 +12,87 @@
         button { cursor: pointer; transition: transform 0.1s; background-size: cover; background-position: center; color: white; border: none; border-radius: 12px; }
         button:active { transform: scale(0.98); }
 
-        /* Desktop Positioning */
+        /* Shared Container Styles */
+        .content-box { background: rgba(0,0,0,0.05); border: 2px solid #333; padding: 15px; overflow-y: auto; white-space: pre-wrap; font-family: monospace; display: block; text-align: left; }
+
         @media (min-width: 601px) {
             #site-canvas { width: 100%; }
             #el-0 { left:7.5252%; top:27.8917px; width:17.4878%; height:80.2104px; z-index:40; }
-            #el-1 { left:6.2757%; top:139.251px; width:35.0203%; height:615.319px; z-index:40; opacity:0.45; }
+            #el-1 { left:6.2757%; top:139.251px; width:35.0203%; height:615.319px; z-index:40; }
             #el-2 { left:54.2000%; top:70.675px; width:39.3891%; height:557.689px; z-index:10; }
             #el-3 { left:26.3934%; top:1515px; width:51.4846%; height:53.5542px; z-index:30; }
             #el-4 { left:7.0291%; top:919.336px; width:86.4219%; height:586.734px; z-index:10; }
-            #el-5 { left:-11.1623%; top:131.464px; width:14.5656%; height:124.736px; z-index:40; }
             #el-6 { left:8.3569%; top:788.232px; width:31.1256%; height:52.3946px; z-index:30; }
         }
-
-        /* Styling for the new containers */
-        #code-input { font-size: 14px; }
-        #fix-summary { background: rgba(0,0,0,0.05); border: 2px solid #333; padding: 15px; overflow-y: auto; white-space: pre-wrap; font-family: monospace; }
-        #fixed-code-output { background: rgba(0,0,0,0.05); border: 2px solid #333; padding: 15px; overflow-y: auto; white-space: pre-wrap; font-family: monospace; }
     </style>
 </head>
 <body>
 
 <div id="site-canvas">
+    <!-- Brand -->
     <div id="el-0" class="dropped-element">
-        <h2 style="font-size: 61px; color: rgb(0, 0, 0); background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%2Fid%2FOIP.9LOxf9rMF1dkkEwn4m9IXAHaE8%3Fpid%3DApi&f=1&ipt=d1cdc32d7d69ec8d7ad4b8fcec24c4602460c12c229fba7294f743103d8bad26f&ipo=images'); background-clip: text; -webkit-text-fill-color: transparent; background-size: cover; background-position: center center;">Podium</h2>
+        <h2 style="font-size: 61px; color: rgb(0, 0, 0); background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%2Fid%2FOIP.9LOxf9rMF1dkkEwn4m9IXAHaE8%3Fpid%3DApi&f=1&ipt=d1cdc32d7d69ec8d7ad4b8fcec24c4602460c12c229fba7294f743103d8bad26f&ipo=images'); background-clip: text; -webkit-text-fill-color: transparent; background-size: cover; background-position: center;">Podium</h2>
     </div>
 
+    <!-- Input -->
     <div id="el-1" class="dropped-element">
-        <textarea id="code-input" placeholder="/// enter code here" style="width: 100%; height: 100%;"></textarea>
+        <textarea id="code-input" placeholder="/// paste code to fix here..."></textarea>
     </div>
 
+    <!-- Summary Output -->
     <div id="el-2" class="dropped-element">
-        <div id="fix-summary" style="width: 100%; height: 100%;">/// lists of fixed things by ai</div>
+        <div id="fix-summary" class="content-box">/// fix summary will appear here</div>
     </div>
 
+    <!-- Copy Button -->
     <div id="el-3" class="dropped-element">
         <button id="copy-btn" style="background: rgb(79, 70, 229); font-size: 43px;">copy code</button>
     </div>
 
+    <!-- Full Code Output -->
     <div id="el-4" class="dropped-element">
-        <div id="fixed-code-output" style="width: 100%; height: 100%;">/// full fixed code here</div>
+        <div id="fixed-code-output" class="content-box">/// full fixed code will appear here</div>
     </div>
 
-    <div id="el-5" class="dropped-element">
-        <p style="font-size: 26px; color: rgb(255, 255, 255);">Please enable desktop mode</p>
-    </div>
-
+    <!-- Fix Button -->
     <div id="el-6" class="dropped-element">
         <button id="fix-btn" style="background: rgb(79, 70, 229); font-size: 43px;">Fix Code</button>
     </div>
 </div>
 
 <script>
-    const GROQ_API_KEY = 'M8N3SRVhJci6H7B3xVUYD8RBYF3bydGWnMS1BDJmHM5X4UOyWqe5_ksg';
-    const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
-
-    const inputTextArea = document.getElementById('code-input');
-    const fixSummaryDiv = document.getElementById('fix-summary');
-    const outputDiv = document.getElementById('fixed-code-output');
     const fixBtn = document.getElementById('fix-btn');
     const copyBtn = document.getElementById('copy-btn');
+    const input = document.getElementById('code-input');
+    const summary = document.getElementById('fix-summary');
+    const output = document.getElementById('fixed-code-output');
 
-    fixBtn.onclick = async function() {
-        const codeToFix = inputTextArea.value.trim();
-        if (!codeToFix) {
-            alert("Please enter some code to fix.");
+    // Fix button logic (Local simulation since Groq is down)
+    fixBtn.onclick = function() {
+        if (!input.value.trim()) {
+            alert("Input is empty!");
             return;
         }
-
-        fixBtn.innerText = "Fixing...";
-        fixBtn.disabled = true;
-
-        try {
-            const response = await fetch(GROQ_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${GROQ_API_KEY}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile",
-                    messages: [
-                        {
-                            role: "system",
-                            content: "You are a professional debugger. Fix the provided code. Output MUST follow this exact format:\n\n[SUMMARY]\nList every error found and what you did to fix it.\n\n[CODE]\nThe full corrected source code."
-                        },
-                        {
-                            role: "user",
-                            content: codeToFix
-                        }
-                    ],
-                    temperature: 0.1
-                })
-            });
-
-            const data = await response.json();
-            const result = data.choices[0].message.content;
-
-            // Parsing the response
-            const summaryMatch = result.match(/\[SUMMARY\]([\s\S]*?)\[CODE\]/i);
-            const codeMatch = result.match(/\[CODE\]([\s\S]*)/i);
-
-            if (summaryMatch && codeMatch) {
-                fixSummaryDiv.innerText = summaryMatch[1].trim();
-                outputDiv.innerText = codeMatch[1].trim();
-                fixSummaryDiv.innerText = "Code fixed successfully.";
-            } else {
-                // Fallback if formatting fails
-                outputDiv.innerText = result;
-                fixSummaryDiv.innerText = "Code processed.";
-            }
-
-        } catch (error) {
-            console.error("API Error:", error);
-            fixSummaryDiv.innerText = "Error contacting AI. Check your API key.";
-        } finally {
+        
+        // Visual feedback
+        fixBtn.innerText = "Processing...";
+        
+        setTimeout(() => {
+            summary.innerText = "Simulation Mode: Groq connection is disabled. Input received successfully.";
+            output.innerText = input.value; // Just mirrors for now
             fixBtn.innerText = "Fix Code";
-            fixBtn.disabled = false;
-        }
+        }, 500);
     };
 
+    // Copy button logic
     copyBtn.onclick = function() {
-        const content = outputDiv.innerText;
-        if (content === "/// full fixed code here" || !content) {
-            alert("Nothing to copy yet!");
-            return;
-        }
+        const text = output.innerText;
+        if (text.includes("///")) return;
 
-        navigator.clipboard.writeText(content).then(() => {
-            const originalText = copyBtn.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const original = copyBtn.innerText;
             copyBtn.innerText = "Copied!";
-            setTimeout(() => { copyBtn.innerText = originalText; }, 2000);
-        }).catch(err => {
-            alert("Failed to copy code.");
+            setTimeout(() => copyBtn.innerText = original, 2000);
         });
     };
 </script>
