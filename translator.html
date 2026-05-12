@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Translator</title>
+    <style>
+        body, html { margin:0; padding:0; width:100%; min-height:100%; overflow-x:hidden; background:#fff; font-family: sans-serif; }
+        #site-canvas { position:relative; width:100%; max-width:1440px; height:1800px; background-color:white; background-image:url("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%2Fid%2FOIP.iTNbqDjg-ShWP5Aa7qn7nAHaEK%3Fpid%3DApi&f=1&ipt=943ae0c38d8a8fd72f1777d0e4b61d3224c28cd88b3b120377b29ec11dd8f7da&ipo=images"); background-size:cover; background-position:center; margin:0 auto; overflow:hidden; }
+        .dropped-element { position:absolute; display:flex; align-items:center; justify-content:center; box-sizing: border-box; transition: opacity 0.2s; }
+        .dropped-element > * { width:100%; height:100%; object-fit:cover; border-radius:12px; border:none; margin:0; box-sizing: border-box; }
+        textarea { resize: none; box-sizing: border-box; padding: 10px; }
+        button { cursor: pointer; transition: transform 0.1s; background-size: cover; background-position: center; }
+        button:active { transform: scale(0.98); }
+        
+        /* Desktop */
+        @media (min-width: 601px) { 
+            #site-canvas { width: 100%; } 
+            #el-0 { left:5.4688%; top:35px; width:28.2193%; height:136.567px; z-index:40 !important; }
+            #el-0 > * { font-size:58px !important; }
+            #el-1 { left:5.9375%; top:194px; width:86.8875%; height:524.566px; z-index:10 !important; }
+            #el-2 { left:13.2031%; top:245px; width:72.7381%; height:171.325px; z-index:40 !important; }
+            #el-2 > * { font-size:44px !important; }
+            #el-3 { left:14.3750%; top:564px; width:72.9105%; height:64.2167px; z-index:30 !important; }
+            #el-3 > * { font-size:52px !important; }
+            #el-4 { left:6.7969%; top:774px; width:86.7562%; height:788.862px; z-index:10 !important; }
+            #el-5 { left:13.2813%; top:881px; width:74.8894%; height:546.29px; z-index:10 !important; padding: 20px; overflow-y: auto; align-items: flex-start; justify-content: flex-start; text-align: left; }
+            #el-6 { left:13.2813%; top:1473px; width:73.3269%; height:66.8823px; z-index:30 !important; }
+            #el-6 > * { font-size:56px !important; }
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) { 
+            #site-canvas { width: 100vw; max-width: 100vw; } 
+            #el-0 { left:5%; top:35px; width:90%; height:100px; z-index:40 !important; }
+            #el-1 { left:5%; top:150px; width:90%; height:400px; z-index:10 !important; }
+            #el-2 { left:10%; top:180px; width:80%; height:150px; z-index:40 !important; }
+            #el-3 { left:10%; top:350px; width:80%; height:60px; z-index:30 !important; }
+            /* ... (simplified mobile for brevity) */
+        }
+    </style>
+</head>
+<body>
+    <div id="site-canvas">
+        <!-- Title -->
+        <div id="el-0" class="dropped-element">
+            <h2 style="color: rgb(0, 0, 0); background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%2Fid%2FOIP.xbsbMmMq7lEMXX1yqwo8BAHaHa%3Fpid%3DApi&f=1&ipt=05044ec513e14c245c3d4a3ace1bfc530e856fbc0682ff229ea2f6abe61895f3&ipo=images'); background-clip: text; -webkit-text-fill-color: transparent; background-size: cover; background-position: center;">HTML translator</h2>
+        </div>
+
+        <!-- Input Section -->
+        <div id="el-1" class="dropped-element">
+            <div style="border: 2px solid rgb(51, 51, 51); background: rgba(0, 0, 0, 0.05); width: 100%; height: 100%; border-radius: 12px;"></div>
+        </div>
+        <div id="el-2" class="dropped-element">
+            <textarea id="textInput" placeholder="Enter text..." style="border: 1px solid rgb(204, 204, 204); border-radius: 12px; background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%2Fid%2FOIP.iTNbqDjg-ShWP5Aa7qn7nAHaEK%3Fpid%3DApi&f=1&ipt=943ae0c38d8a8fd72f1777d0e4b61d3224c28cd88b3b120377b29ec11dd8f7da&ipo=images'); background-clip: text; -webkit-text-fill-color: transparent; background-size: cover; background-position: center;"></textarea>
+        </div>
+        <div id="el-3" class="dropped-element">
+            <button id="translateBtn" style="background: rgb(79, 70, 229); color: white; border-radius: 12px;">Translate</button>
+        </div>
+
+        <!-- Output Section -->
+        <div id="el-4" class="dropped-element">
+            <div style="border: 2px solid rgb(51, 51, 51); background: rgba(0, 0, 0, 0.05); width: 100%; height: 100%; border-radius: 12px;"></div>
+        </div>
+        <div id="el-5" class="dropped-element">
+            <div id="textOutput" style="border: 2px solid rgb(51, 51, 51); background: rgba(255, 255, 255, 0.8); width: 100%; height: 100%; border-radius: 12px; display: block; overflow-y: auto; padding: 15px; font-size: 24px; color: #333;">
+                Translation will appear here...
+            </div>
+        </div>
+        <div id="el-6" class="dropped-element">
+            <button id="copyBtn" style="background: rgb(79, 70, 229); color: white; border-radius: 12px;">Copy Result</button>
+        </div>
+    </div>
+
+    <script>
+        const inputArea = document.getElementById('textInput');
+        const outputDiv = document.getElementById('textOutput');
+        const translateBtn = document.getElementById('translateBtn');
+        const copyBtn = document.getElementById('copyBtn');
+
+        // 1. Translate Logic
+        translateBtn.addEventListener('click', () => {
+            const text = inputArea.value.trim();
+            
+            if (text === "") {
+                alert("Please enter some text first!");
+                return;
+            }
+
+            outputDiv.innerText = "Translating...";
+
+            // Simulate an API delay
+            setTimeout(() => {
+                // Placeholder Logic: Inverting text as a "translation" effect
+                // Replace this line with your actual API call result
+                const simulatedTranslation = "[Translated]: " + text.split("").reverse().join("");
+                
+                outputDiv.innerText = simulatedTranslation;
+            }, 800);
+        });
+
+        // 2. Copy Logic
+        copyBtn.addEventListener('click', async () => {
+            const textToCopy = outputDiv.innerText;
+            
+            if (textToCopy === "Translation will appear here..." || textToCopy === "Translating...") {
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                const originalText = copyBtn.innerText;
+                copyBtn.innerText = "Copied! ✅";
+                setTimeout(() => copyBtn.innerText = originalText, 2000);
+            } catch (err) {
+                console.error("Failed to copy: ", err);
+            }
+        });
+    </script>
+</body>
+</html>
